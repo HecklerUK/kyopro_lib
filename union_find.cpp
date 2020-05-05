@@ -40,6 +40,7 @@ struct UnionFind {
     if (d[x] < 0) return x;
     return d[x] = find(d[x]);
   }
+
   bool unite(ll x, ll y) {
     x = find(x); y = find(y);
     if (x == y) return false;
@@ -48,6 +49,12 @@ struct UnionFind {
     d[y] = x;
     return true;
   }
-  bool same(ll x, ll y) { return find(x) == find(y);}
-  ll size(ll x) { return -d[find(x)];}
+
+  bool same(ll x, ll y) {
+    return find(x) == find(y);
+  }
+
+  ll size(ll x) {
+    return -d[find(x)];
+  }
 };
