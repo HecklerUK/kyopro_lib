@@ -34,11 +34,11 @@ const int dx[4] = {-1, 0, 1, 0};
 const int dy[4] = {0, -1, 0, 1};
 
 
-struct SegmentTree{
+struct SegmentTreeMAX{
   ll n;
   vll tree;
 
-  SegmentTree(ll len){
+  SegmentTreeMAX(ll len){
     n=1;
     while(len>n)
       n*=2;
@@ -73,7 +73,91 @@ struct SegmentTree{
     ll value_r = query(a,b,2*index+2,(l+r)/2,r);
     return max(value_l, value_r);
   }
+};
 
+
+
+struct SegmentTreeMIN{
+  ll n;
+  vll tree;
+
+  SegmentTreeMIN(ll len){
+    n=1;
+    while(len>n)
+      n*=2;
+
+    tree.assign(2*n-1, LLINF);
+  }
+
+  void update(ll index, ll value){
+    index += n-1;
+    tree[index] = value;
+
+    while(index>0){
+      index=(index-1)/2;
+      tree[index] = min(tree[index*2+1], tree[index*2+2]);
+    }
+  }
+
+
+  //[a, b)
+  ll query(ll a, ll b){
+    return query(a,b,0,0,n);
+  }
+
+  ll query(ll a, ll b, ll index, ll l, ll r){
+    if(b<=l || r<=a)
+      return LLINF;
+
+    if(a<=l && r<=b)
+      return tree[index];
+
+    ll value_l = query(a,b,2*index+1,l,(l+r)/2);
+    ll value_r = query(a,b,2*index+2,(l+r)/2,r);
+    return min(value_l, value_r);
+  }
+};
+
+
+struct SegmentTreeADD{
+  ll n;
+  vll tree;
+
+  SegmentTreeADD(ll len){
+    n=1;
+    while(len>n)
+      n*=2;
+
+    tree.assign(2*n-1, 0);
+  }
+
+  void update(ll index, ll value){
+    index += n-1;
+    tree[index] = value;
+
+    while(index>0){
+      index=(index-1)/2;
+      tree[index] = tree[index*2+1]+tree[index*2+2];
+    }
+  }
+
+
+  //[a, b)
+  ll query(ll a, ll b){
+    return query(a,b,0,0,n);
+  }
+
+  ll query(ll a, ll b, ll index, ll l, ll r){
+    if(b<=l || r<=a)
+      return 0;
+
+    if(a<=l && r<=b)
+      return tree[index];
+
+    ll value_l = query(a,b,2*index+1,l,(l+r)/2);
+    ll value_r = query(a,b,2*index+2,(l+r)/2,r);
+    return value_l+value_r;
+  }
 };
 
 
@@ -85,7 +169,7 @@ int main(){
   vll v={2,3,6,1,8,4,7};
   ll n=v.size();
 
-  SegmentTree st(n);
+  SegmentTreeMAX st(n);
   REP(i,n)
     st.update(i,v[i]);
 
