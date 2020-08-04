@@ -33,7 +33,7 @@ const int MOD = 1e9 + 7;
 const int dx[4] = {-1, 0, 1, 0};
 const int dy[4] = {0, -1, 0, 1};
 
-
+//O(|E|log|V|)
 struct Dijkstra{
   struct edge{
     ll to;
@@ -51,6 +51,10 @@ struct Dijkstra{
 
   void addEdge(ll from, ll to, ll cost){
     graph[from].push_back(edge(to, cost));
+  }
+  
+  void initiarizeDist(){
+	  dist=vll(n,LLINF);
   }
 
   void calc(ll start){

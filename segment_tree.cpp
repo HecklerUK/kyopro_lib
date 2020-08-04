@@ -7,6 +7,7 @@ typedef pair<int,int> pii;
 typedef pair<ll,ll> pll;
 typedef pair<ld,ld> pdd;
 typedef vector<ll> vll;
+typedef vector<vll> vvll;
 typedef vector<ld> vld;
 typedef vector<pll> vpl;
 
@@ -118,12 +119,12 @@ struct SegmentTreeMIN{
   }
 };
 
-
-struct SegmentTreeADD{
+//区間和
+struct SegmentTreeSUM{
   ll n;
   vll tree;
 
-  SegmentTreeADD(ll len){
+  SegmentTreeSUM(ll len){
     n=1;
     while(len>n)
       n*=2;
@@ -161,6 +162,71 @@ struct SegmentTreeADD{
 };
 
 
+//区間加算
+template<typename T> 
+struct SegmentTreeADD{
+  ll n;
+  vector<T> tree[2];
+
+  SegmentTreeADD(ll len){
+    n=1;
+    while(len>n)
+      n*=2;
+
+    REP(i,2)
+      tree[i].assign(2*n-1, 0);
+  }
+
+  void set(ll index, T x){
+    tree[0][n-1+index]=x;
+  }
+
+  void build(){
+    for(int index=n-2; index>=0; index--)
+      tree[0][index] = tree[0][index*2+1]+tree[0][index*2+2];
+  }
+
+
+  //[a, b)
+  void add(ll a, ll b, T x){
+    return add(a,b,x,0,0,n);
+  }
+
+  void add(ll a, ll b, T x, ll index, ll l, ll r){
+    if(a<=l && r<=b)
+      tree[1][index]+=(r-l)*x;
+
+    else if(l<b && a<r){
+      tree[1][index]+=(min(b,r)-max(a,l))*x;
+      add(a,b,x,2*index+1,l,(l+r)/2);
+      add(a,b,x,2*index+2,(l+r)/2,r);
+    }
+  }
+
+  //[a, b)
+  T sum(ll a, ll b){
+    return sum(a,b,0,0,n);
+  }
+
+  T sum(ll a, ll b, ll index, ll l, ll r){
+    if(b<=l || r<=a)
+      return 0;
+
+    else if(a<=l && r<=b)
+      return tree[0][index]+tree[1][index];
+
+    else{
+      ll res=0;
+      res += sum(a,b,2*index+1,l,(l+r)/2);
+      res += sum(a,b,2*index+2,(l+r)/2,r);
+      return res;
+    }
+  }
+
+
+};
+
+
 
 int main(){
   ios_base::sync_with_stdio(false);
@@ -169,10 +235,19 @@ int main(){
   vll v={2,3,6,1,8,4,7};
   ll n=v.size();
 
-  SegmentTreeMAX st(n);
+//  SegmentTreeMAX st(n);
+//  REP(i,n)
+//    st.update(i,v[i]);
+//
+//  ll ans=st.query(1,5);
+//  cout<<ans<<endl;
+  SegmentTreeADD<ll> st(n);
+  REP(i,n)st.set(i,v[i]);
+  st.build();
   REP(i,n)
-    st.update(i,v[i]);
+    cout<<"tree:"<<st.tree[0][7+i]<<endl;
+  cout<<st.sum(0,7)<<endl;
 
-  ll ans=st.query(1,5);
-  cout<<ans<<endl;
+  st.add(2,6,1);
+  cout<<st.sum(0,7)<<endl;
 }
