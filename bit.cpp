@@ -117,7 +117,7 @@ int main(){
   bit.add(0, 1);
   bit.add(1, 2);
   bit.add(2, 3);
-  cout<<bit.sum(0,4)<<endl;
+  cout<<bit.sum(0,2)<<endl;
 }
 
 
